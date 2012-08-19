@@ -3,17 +3,19 @@
 
 \section{归约的概念}
 
-归约实现了问题之间的转化。通常，有些问题是难以直接解决的，
+%归约实现了问题之间的转化。通常，有些问题是难以直接解决的，
 
-将二部图匹配归约到网络最大流。
+%在问题求解的过程中，归约使用的如此频繁，甚至很多时候我们都没有意识到自己实际上已经将一个问题归约成了另一个问题。
 
-将最大权闭包归约到最小割。
+%将二部图匹配归约到网络最大流。
 
-子树查询变为区间查询。
+%将最大权闭包归约到最小割。
 
-GSS2中查询的归约。
+%子树查询变为区间查询。
 
-区间询问。
+%GSS2中查询的归约。
+
+%区间询问。
 
 \section{SAT问题}
 
@@ -24,7 +26,7 @@ GSS2中查询的归约。
  是可满足的，令$x_1=x_2=x_3=T$即可。
 \end{prob}
 
-SAT在计算机科学中有着十分重要的地位。对于每一个子句$C_i$中变量的个数不超过2的情况，2-SAT存在十分高效的算法；
+SAT问题在计算机科学中有着十分重要的地位。对于每一个子句$C_i$中变量的个数不超过2的情况，2-SAT存在十分高效的算法；
 但如果仅仅将这个限制放宽为$C_i$中变量个数不超过3，该问题就成为了NP-完全问题，这意味着所有NP问题都可以在多项式时间内归约到
 3-SAT，SAT是最早被证明的NP-完全问题。
 
@@ -33,13 +35,13 @@ SAT在计算机科学中有着十分重要的地位。对于每一个子句$C_i$
 \end{prob}
 
 解决2-SAT问题的突破口是$(p\to q) = (\neg p \lor q)$。
-我们可以将形如$a\lor b$的子句改写成蕴含的形式：$$(a\lor b) = (\neg a \to b) \land (\neg b \to a).$$
+我们可以将形如$a\lor b$的子句改写成蕴含的形式：$$(a\lor b) = (\neg a \to b) = (\neg b \to a) = (\neg a \to b) \land (\neg b \to a).$$
 这样，2-SAT问题就被我们改写成了若干蕴含式的合取，此时问题的解决也十分明朗：建立有向图$G(V,E)$，其中$V$是由每个变量$x_i$和它的取反$\neg x_i$组成的，
 而对于改写后的每一个蕴含式$a\to b$，都在图中添加一条由$a$指向$b$的边。
 由于蕴含关系的传递性，若图中如果存在$x_i$到$\neg x_i$的路径，则说明2-SAT中包含矛盾，否则我们就可以依据蕴含关系求出2-SAT的一个解。
-更进一步，因为$G$特殊的对称性, $x_i$到$\neg x_i$存在路径总是意味着$\neg x_i$到$x_i$也存在路径，所以2-SAT最终被归约到有向图强连通分量问题的求解。
+更进一步，因为$G$特殊的对称性(故意将一个析取式变换成了两个等价蕴含式的合取), $x_i$到$\neg x_i$存在路径总是意味着$\neg x_i$到$x_i$也存在路径，所以2-SAT最终被归约到有向图强连通分量问题的求解。
 SAT问题包含了逻辑上的约束关系，因此应用十分广泛，例如下述问题就可以归约到2-SAT：
-\begin{prob}
+\begin{prob}[异或求解, XOR]
  给定非负整数权无向图$G(V, E, W)$，你需要为每一个结点$v$求一个整数标号$X_v$，使得对于每条边$\{u, v\}\in E$, $X_u \oplus X_v = W_{u,v}$。
  其中$\oplus$为按位异或运算。
 \end{prob}
@@ -47,9 +49,10 @@ SAT问题包含了逻辑上的约束关系，因此应用十分广泛，例如�
 除了在计算理论中的价值外，SAT问题还有其实际应用。因为其NP-完全的特性，很多问题都可以十分容易地归约到SAT问题，
 SAT也因此成为解决许多难问题的标准途径。
 人们对SAT问题求解的需求增长，也刺激了对SAT问题求解的研究。尽管SAT问题在理论上是十分困难的，但很多算法确实能非常高效地解决各种实际问题，
-能够求解现实问题中数万个变量、数百万个子句的SAT问题，我们能从互联网上获取各种各样的SAT solver。
+能够求解现实问题中数万个变量、数百万个子句的SAT问题，而且我们能从互联网上获取各种各样的SAT solver。
+作为SAT solver的应用，我们以覆盖问题
 
-\begin{prob}[覆盖问题, Exact Cover, EC]
+\begin{prob}[覆盖问题, Exact Cover]
  给定一个$n\times m$的01矩阵$A$，求一个行的集合$C\subseteq[n]$，满足对于任意的$j$, 
  $\sum_{i\in C} A_{i,j} = 1$。也就是说，我们要从$A$中取出若干行得到一个子矩阵，满足该子矩阵中每列恰好只有一个$1$。
  例如，若
@@ -67,26 +70,161 @@ SAT也因此成为解决许多难问题的标准途径。
 % SPOJ 217
 % 你在玩一个塔防小游戏，游戏在一张矩形地图上进行，地图上有4种格子，分别是防御塔、敌人、障碍和空地。你只能在游戏开始前调整防御塔的状态，虽然游戏开始以后敌人是不会动的，但你的目标是消灭所有的敌人，并保证防御塔之间不会误伤。
 
+有些问题可以很自然地被归约到Exact Cover，例如下面提到的方块覆盖问题：
+
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}[scale = 0.5]
+  \draw[help lines] (0, 0) grid (8, 8);
+  \draw[line width=0.75mm, fill=red!15] (0, 0) -- (1, 0) -- (1, 1) -- (3, 1) -- (3, 2) -- (1, 2) -- (1, 3) -- (0, 3) -- (0, 0);
+  \draw[line width=0.75mm, fill=green!15] (1, 0) -- (5, 0) -- (5, 1) -- (4, 1) -- (4, 2) -- (3, 2) -- (3, 1) -- (1, 1) -- (1, 0);
+  \draw[line width=0.75mm, fill=blue!15] (5, 0) -- (8, 0) -- (8, 3) -- (7, 3) -- (7, 1) -- (5, 1) -- (5, 0);
+  \draw[line width=0.75mm, fill=yellow!15] (0, 3) -- (1, 3) -- (1, 2) -- (3, 2) -- (3, 4) -- (0, 4) -- (0, 3);
+  \draw[line width=0.75mm, fill=red!15] (3, 2) -- (4, 2) -- (4, 1) -- (5, 1) -- (5, 2) -- (6, 2) -- (6, 4) -- (5, 4) -- (5, 3) -- (3, 3) -- (3, 2);
+  \draw[line width=0.75mm, fill=yellow!15] (5, 1) -- (7, 1) -- (7, 3) -- (8, 3) -- (8, 4) -- (6, 4) -- (6, 2) -- (5, 2) -- (5, 1);
+  \draw[line width=0.75mm, fill=blue!15] (0, 4) -- (2, 4) -- (2, 5) -- (1, 5) -- (1, 6) -- (2, 6) -- (2, 7) -- (0, 7) -- (0, 4);
+  \draw[line width=0.75mm, fill=green!15] (2, 4) -- (3, 4) -- (3, 5) -- (4, 5) -- (4, 6) -- (3, 6) -- (3, 7) -- (2, 7) -- (2, 6) -- (1, 6) -- (1, 5) -- (2, 5) -- (2, 4);
+  \draw[line width=0.75mm, fill=blue!15] (3, 6) -- (4, 6) -- (4, 5) -- (5, 5) -- (5, 4) -- (6, 4) -- (6, 6) -- (5, 6) -- (5, 7) -- (3, 7) -- (3, 6);
+  \draw[line width=0.75mm, fill=red!15] (5, 6) -- (6, 6) -- (6, 4) -- (7, 4) -- (7, 7) -- (6, 7) -- (6, 8) -- (5, 8) -- (5, 6);
+  \draw[line width=0.75mm, fill=green!15] (7, 4) -- (8, 4) -- (8, 8) -- (6, 8) -- (6, 7) -- (7, 7) -- (7, 4);
+  \draw[line width=0.75mm, fill=yellow!15] (0, 8) -- (5, 8) -- (5, 7) -- (0, 7) -- (0, 8);
+  \draw[line width=0.75mm, fill=gray!0] (3, 3) -- (3, 5) -- (5, 5) -- (5, 3) -- (3, 3);
+ \end{tikzpicture}
+
+ \caption{一个方块覆盖问题的实例}
+ \label{fig:tetris}
+\end{figure}
+
+\begin{prob}[方块覆盖，Tetris]
+给出一个$n\times n$的棋盘，棋盘上指定一些方格为空格。你需要用给定的若干种部件填满所有的空格。
+\end{prob}
+
 Exact Cover是一个NP-完全问题，使用Dancing Links数据结构的搜索配合一些启发策略是解决Exact Cover问题的通常手段。
 为了充分利用SAT solver，我们现在将Exact Cover归约到SAT：我们为矩阵的每一行设置一个变量$x_i$，当$x_i=T$时，我们希望$i\in C$，相反当$x_i=F$时，$i\notin C$。
 首先，我们希望矩阵中的每一列都被覆盖，因此对于每一列$j$，令$T_j = \{ i~|~ A_{i,j} = 1\}$, 则子句
 $$\bigvee_{i \in T_j} x_i$$
 代表了``第$j$列至少包含一个1''。
-其次，我们希望每一列至多只有一个1。因此我们必须禁止某些行被同时选中，即对于每一对$(p,q)$，若第$p$行和第$q$行在同一列上有公共的1，我们需要满足
-$$\neg (x_p \land x_q) = (\neg x_p \lor x_q).$$
+其次，我们希望每一列至多只有一个1。因此我们必须禁止某些行被同时选中，即对于每一对$(p,q)$，若第$p$行和第$q$行在同一列上有公共的1，我们还需要满足
+$$\neg (x_p \land x_q) = (\neg x_p \lor \neg x_q).$$
 
 将$n\times m$规模的Exact Cover归约到SAT问题后约有$O(m)$个$O(n)$大小的clause，以及$O(n^2)$个$O(1)$大小的clause，问题的整体规模并没有数量级上的提升，
 这个归约可以用来解决很多问题，例如数独的求解。
 
-\begin{prob}[新数独问题]
- 你需要在一个$16\times16$的方阵中填入A-P这16个字母，并且满足每行、每列以及16个粗线标出的$4\times4$方格中，A-P中的每个字母恰好出现一次。
- 固定方阵中的一些字母，求一组可行的解。问题的例子如图 \ref{fig:SUDOKU} 所示。
- \begin{figure}
-  \center
-  \includegraphics[width=400pt]{sudoku.png}
-  \caption{新数独问题}
-  \label{fig:SUDOKU}
- \end{figure}
+\begin{figure}[h]
+ \center
+
+  \newcounter{row}
+\newcounter{col}
+
+\newcommand\setrow[9]{
+  \setcounter{col}{1}
+  \foreach \n in {#1, #2, #3, #4, #5, #6, #7, #8, #9} {
+    \edef\x{\value{col} - 0.5}
+    \edef\y{9.5 - \value{row}}
+    \node[anchor=center] at (\x, \y) {\n};
+    \stepcounter{col}
+  }
+  \stepcounter{row}
+}
+
+  \begin{tikzpicture}[scale=.5]
+
+    \begin{scope}
+      \draw (0, 0) grid (9, 9);
+      \draw[very thick, scale=3] (0, 0) grid (3, 3);
+
+      \setcounter{row}{1}
+      \setrow { }{2}{ }  {5}{ }{1}  { }{9}{ }
+      \setrow {8}{ }{ }  {2}{ }{3}  { }{ }{6}
+      \setrow { }{3}{ }  { }{6}{ }  { }{7}{ }
+
+      \setrow { }{ }{1}  { }{ }{ }  {6}{ }{ }
+      \setrow {5}{4}{ }  { }{ }{ }  { }{1}{9}
+      \setrow { }{ }{2}  { }{ }{ }  {7}{ }{ }
+
+      \setrow { }{9}{ }  { }{3}{ }  { }{8}{ }
+      \setrow {2}{ }{ }  {8}{ }{4}  { }{ }{7}
+      \setrow { }{1}{ }  {9}{ }{7}  { }{6}{ }
+
+      \node[anchor=center] at (4.5, -0.5) {一个数独问题};
+    \end{scope}
+
+    \begin{scope}[xshift=12cm]
+      \draw (0, 0) grid (9, 9);
+      \draw[very thick, scale=3] (0, 0) grid (3, 3);
+
+      \setcounter{row}{1}
+      \setrow { }{2}{ }  {5}{ }{1}  { }{9}{ }
+      \setrow {8}{ }{ }  {2}{ }{3}  { }{ }{6}
+      \setrow { }{3}{ }  { }{6}{ }  { }{7}{ }
+
+      \setrow { }{ }{1}  { }{ }{ }  {6}{ }{ }
+      \setrow {5}{4}{ }  { }{ }{ }  { }{1}{9}
+      \setrow { }{ }{2}  { }{ }{ }  {7}{ }{ }
+
+      \setrow { }{9}{ }  { }{3}{ }  { }{8}{ }
+      \setrow {2}{ }{ }  {8}{ }{4}  { }{ }{7}
+      \setrow { }{1}{ }  {9}{ }{7}  { }{6}{ }
+
+      \node[anchor=center] at (4.5, -0.5) {数独问题的解};
+
+      \begin{scope}[blue, font=\sffamily\slshape]
+	\setcounter{row}{1}
+	\setrow {4}{ }{6}  { }{7}{ }  {3}{ }{8}
+	\setrow { }{5}{7}  { }{9}{ }  {1}{4}{ }
+	\setrow {1}{ }{9}  {4}{ }{8}  {2}{ }{5}
+
+	\setrow {9}{7}{ }  {3}{8}{5}  { }{2}{4}
+	\setrow { }{ }{3}  {7}{2}{6}  {8}{ }{ }
+	\setrow {6}{8}{ }  {1}{4}{9}  { }{5}{3}
+
+	\setrow {7}{ }{4}  {6}{ }{2}  {5}{ }{1}
+	\setrow { }{6}{5}  { }{1}{ }  {9}{3}{ }
+	\setrow {3}{ }{8}  { }{5}{ }  {4}{ }{2}
+      \end{scope}
+
+    \end{scope}
+
+  \end{tikzpicture}
+ \caption{一个数独问题的实例}
+ \label{fig:sudoku}
+\end{figure}
+
+\begin{prob}[数独问题, Sudoku]
+ 你需要在一个$9\times9$的方阵中填入1-9这9个数字，并且满足每行、每列以及9个粗线标出的$3\times3$方格中，1-9中的每个数字恰好出现一次。
+ 固定方阵中的一些数字，求一组可行的解。问题的例子如图 \ref{fig:sudoku} 所示。
 \end{prob}
 
-在数独的例子中，我们生成的SAT问题有$4096$个变量，$10^5$数量级的约束条件，但一个好的SAT solver仍然能够在数秒以内给出正确的解答。
+
+在数独的例子中，我们生成的SAT问题实例有$729$个变量($x_{i,j,k}$表示在$(i,j)$格子中填入字母$k$)，$10^4$数量级的子句数量，但一个好的SAT solver仍然能够在极少的时间内给出正确的解答。
+事实上，即便我们将数独方阵的大小扩展到$16\times16$，问题实例的变量数上升到$4096$，子句数量上升到$10^5$数量级，SAT solver仍然能在数秒之内给出解答。
+
+
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}
+  \matrix (m) [matrix of nodes,row sep=2em,column sep=2em,minimum width=1em]
+  {
+     & Tetris & \\
+     Sudoku & Exact Cover & SAT \\
+     XOR & 2-SAT & 3-SAT\\
+         & 强连通分量 & \\
+  };
+  \path[-stealth]
+    (m-1-2) edge (m-2-2)
+    (m-2-1) edge (m-2-2)
+    (m-2-2) edge [stealth-stealth] (m-2-3)
+    (m-3-1) edge (m-3-2)
+    (m-3-2) edge (m-2-3)
+    (m-3-2) edge (m-3-3)
+    (m-3-3) edge [stealth-stealth] (m-2-3)
+    (m-3-2) edge (m-4-2)
+;
+ \end{tikzpicture}
+ \caption{SAT相关问题的归约关系\protect\footnotemark}
+ \label{fig:sat-reduction}
+\end{figure}
+\footnotetext{广义的方块覆盖和数独问题都是NP-完全问题，它们能与SAT, Exact Cover互相归约。}
+
+图 \ref{fig:sat-reduction} 中列举了与SAT有关的一系列问题之间的归约关系，我们看到，问题的归约并不是唯一的。SAT和Exact Cover都是NP-完全问题，它们之间可以相互归约；
+2-SAT既可以被归约成一般的SAT问题从而调用SAT solver求解，也可以被归约成图中的强连通分量问题，用基于深度优先搜索的算法求解。

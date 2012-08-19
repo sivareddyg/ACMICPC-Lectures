@@ -1,1 +1,5 @@
 *~
+*.aux
+*.toc
+*.pdf
+*.backup
