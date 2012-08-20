@@ -1,26 +1,191 @@
 \chapter{归约}
 
 
-\section{归约的概念}
+\section{从最大匹配说起}
 
 对于许多问题来说，寻求一个直接的解答、构造一个直接解决问题的算法是非常困难的。我们早已习惯通过变换问题的结构、挖掘问题的性质，在一个困难的问题中抽取出模型，
 然后用已有的算法来解决，这就是问题与问题之间的归约。
 在问题求解的过程中，归约使用的如此频繁，甚至很多时候我们都没有意识到自己实际上已经将一个问题归约成了另一个问题。问题与问题之间转化的过程
-通常隐含了归约的过程。例如我们在二进制计算机中已有加减法、移位和平方三种运算，我们可以在这些运算的基础上构造出乘法运算：
-$$a\times b = \left( (a+b)^2 - (a^2 + b^2) \right) \times 2^{-1}.$$
+通常隐含了归约的过程。我们现在来看一个大家十分熟悉的问题：
 
-%将二部图匹配归约到网络最大流。
+\begin{prob}[二分图最大匹配, BIMATCH]
+ 给定二分图$G(X,Y,E)$，求$G$的一个最大匹配。$M$是$G$的匹配当且仅当$M\subseteq E$满足
+ 任意的$e_1, e_2 \in M$有$e_1\cap e_2 = \varnothing$。
+\end{prob}
 
-%将最大权闭包归约到最小割。
+求解二分图最大匹配的一个有效算法是将它归约到网络最大流问题，如图 \ref{fig:match-to-flow} 所示。
+二分图最大匹配的过程实际是一个算法，它接受二分图$G$作为输入，生成一个单位容量的流网络$G'$，然后求解$G'$的网络最大流，最大流的流量对应着最大匹配的数量，
+而最大流中一些边的流量则对应着具体的匹配。
 
-%子树查询变为区间查询。
 
-%GSS2中查询的归约。
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}
+ \begin{scope}
+  \node[vertex](l4) at (0, 0) {$d$};
+  \node[vertex](l3) at (0, 1) {$c$};
+  \node[vertex](l2) at (0, 2) {$b$};
+  \node[vertex](l1) at (0, 3) {$a$};
+  \node[vertex](r4) at (2, 0) {$d'$};
+  \node[vertex](r3) at (2, 1) {$c'$};
+  \node[vertex](r2) at (2, 2) {$b'$};
+  \node[vertex](r1) at (2, 3) {$a'$};
+  \path[-]
+    (l1) edge (r1)
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l2) edge (r3)
+    (l2) edge (r4)
+    (l3) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+  \path[-, line width=1pt]
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+ \end{scope}
 
-%区间询问。
+ \begin{scope}[xshift=6cm]
+  \node[vertex](l4) at (0, 0) {$d$};
+  \node[vertex](l3) at (0, 1) {$c$};
+  \node[vertex](l2) at (0, 2) {$b$};
+  \node[vertex](l1) at (0, 3) {$a$};
+  \node[vertex](r4) at (2, 0) {$d'$};
+  \node[vertex](r3) at (2, 1) {$c'$};
+  \node[vertex](r2) at (2, 2) {$b'$};
+  \node[vertex](r1) at (2, 3) {$a'$};
+  \node[vertex](s) at (-1.5, 1.5) {$s$};
+  \node[vertex](t) at (3.5, 1.5) {$t$};
+  \path[-stealth]
+   (s) edge (l1) (s) edge (l2) (s) edge (l3) (s) edge (l4)
+   (r1) edge (t) (r2) edge (t) (r3) edge (t) (r4) edge (t)
+;
+  \path[-stealth]
+    (l1) edge (r1)
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l2) edge (r3)
+    (l2) edge (r4)
+    (l3) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+  \path[-stealth, line width=1pt]
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+    (s) edge (l1) (s) edge (l2) (s) edge (l3) (s) edge (l4)
+    (r1) edge (t) (r2) edge (t) (r3) edge (t) (r4) edge (t)
+;
+ \end{scope}
 
-归约中最常见，也是最简单的形式如图 \ref{fig:reduction-show} 所示。为了求解问题A，我们使用一个算法将A问题的输入转换为B问题的输入，求解B问题后
-再将B问题的输出转换为A问题的输出。
+ \end{tikzpicture}
+ \caption{二分图最大匹配到网络最大流的归约}
+ \label{fig:match-to-flow}
+\end{figure}
+
+在上述归约中，如果二分图$G$包含$V$个结点和$E$条边，我们构造的流网络就有
+$V+2$个结点和$E+2V$条边，归约前后问题的规模几乎是相同的。
+然而这并不总是成立，归约前后问题的规模可能有很大的差别，
+甚至会有指数级的增长(例如直接将二分图匹配问题归约到DNF-SAT)。 % maybe we can use another example
+Dinic算法在求解这类具有特殊结构的网络流问题时有$O(\sqrt{V} E)$的时间复杂度，因此这个归约不仅很简洁，而且能够很高效地求解。
+
+这个例子给了我们一些关于归约的启发：归约在大多数时候意味着用一个更通用的算法，来解决一个相对简单的问题。
+我们构造了一个非常特殊的流网络求解了二分图匹配问题，而网络流所能解决问题的范畴则远远不止于此。
+顺着这个思路，我们可以把二分图匹配的问题，乃至一般图匹配问题归约到一个更加一般的问题：
+
+\begin{prob}[最大团, Clique]
+给定有向图$G(V,E)$，求$G$中最大的点集$C\subseteq V$，满足对于任意的$u\neq v \in C$, $\{u, v\} \in E$。
+每个满足条件的点集都是一个团，其中最大的则称为图的最大团。
+\end{prob}
+
+现在我们把二分图匹配归约到Clique，从$G(X, Y, E)$出发构造图$G'(V',E')$：令$V'$为$G$的边集$E$，
+对于$G$中的每对边$e_1, e_2 \in E$，如果$e_1 \cap e_2 = \varnothing$，我们就将$\{e_1, e_2\}$添加到$E'$中。
+这样$G'$中的每个团都对应$G$中的一个匹配，而$G$中的每一个匹配也对应$G'$中的一个团，因此
+求解$G'$中的最大团，就能得到$G$中的最大匹配，如图 \ref{fig:match-to-clique} 所示。
+
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}
+ \begin{scope}
+  \node[vertex](l4) at (0, 0) {$d$};
+  \node[vertex](l3) at (0, 1) {$c$};
+  \node[vertex](l2) at (0, 2) {$b$};
+  \node[vertex](l1) at (0, 3) {$a$};
+  \node[vertex](r4) at (2, 0) {$d'$};
+  \node[vertex](r3) at (2, 1) {$c'$};
+  \node[vertex](r2) at (2, 2) {$b'$};
+  \node[vertex](r1) at (2, 3) {$a'$};
+  \path[-]
+    (l1) edge (r1)
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l2) edge (r3)
+    (l2) edge (r4)
+    (l3) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+  \path[-, line width=1pt]
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+ \end{scope}
+
+ \begin{scope}[xshift=6cm]
+  \node[vertex](e1) at (-1, 2) {$aa'$};
+  \node[vertex, line width=1pt](e2) at (-1, 1) {$ab'$};
+  \node[vertex, line width=1pt](e3) at (1, 0) {$ba'$};
+  \node[vertex](e4) at (0, 3) {$bc'$};
+  \node[vertex](e5) at (0, 0) {$bd'$};
+  \node[vertex](e6) at (2, 1) {$ca'$};
+  \node[vertex, line width=1pt](e7) at (2, 2) {$cc'$};
+  \node[vertex, line width=1pt](e8) at (1, 3) {$dd'$};
+  \path[-]
+   (e1) edge (e4) (e1) edge (e5) (e1) edge (e7) (e1) edge (e8)
+   (e2) edge (e3) (e2) edge (e4) (e2) edge (e5) (e2) edge (e6) (e2) edge (e7) (e2) edge (e8)
+   (e3) edge (e6) (e3) edge (e7) (e3) edge (e8)
+   (e4) edge (e8)
+   (e5) edge (e6) (e5) edge (e7)
+   (e6) edge (e8)
+   (e7) edge (e8)
+;
+  \path[-, line width=1pt]
+    (e2) edge (e3) (e2) edge (e7) (e2) edge (e8)
+    (e3) edge (e7) (e3) edge (e8)
+    (e7) edge (e8)
+;
+ \end{scope}
+
+ \end{tikzpicture}
+ \caption{二分图最大匹配到最大团的归约}
+ \label{fig:match-to-clique}
+\end{figure}
+
+我们来把$G(X,Y,E)$的最大匹配归约到网络流和归约到Clique进行一些对比。
+归约到Clique时所创建的图有$E$个结点和$O(V^2)$条边，我们看到，问题的规模已经呈现出了平方级的增长(尤其是在$G$很稀疏的情况下)；
+此外，Clique还是一个NP-完全问题，目前还没有任何一个算法能高效地解决它。尽管在实际求解时，由最大匹配问题归约而来的实例具有其特殊性，
+一些好的solver可能有较好的效率(甚至可能总是能够在多项式时间内给出结果)，
+但总体而言，把最大匹配归约到Clique是正确的，但并没有给我们解决问题带来很大的帮助。
+因此，我们希望理想的归约能有以下特性：
+
+\begin{enumerate}
+ \item 存在高效的算法实现归约过程，以及结果的转换。在前面的例子中，这样的转换算法都是十分朴素的，但在更复杂的问题中，归约过程本身就可能非常复杂。
+ \item 归约后的问题存在高效的算法。除非我们待解决的问题是一个难问题，我们一般都希望归约后的问题能在多项式时间内解决。
+ \item 归约后问题的规模在可求解的范围。
+\end{enumerate}
+
+\section{不同形式的归约}
+
+之前我们展示的是归约中最常见，也是最简单的形式，如图 \ref{fig:reduction-show} 所示。
+为了求解问题A，我们使用一个算法将A问题的输入转换为B问题的输入，求解B问题后再将B问题的输出转换为A问题的输出。
+这种类型的归约通常能够找到两个问题实例之间的对应关系(例如一个二分图的某个匹配对应了某个流网络中的一个可行流，或是某个图中的一个团)。
 
 \begin{figure}[h]
  \center
@@ -43,17 +208,50 @@ $$a\times b = \left( (a+b)^2 - (a^2 + b^2) \right) \times 2^{-1}.$$
  \label{fig:reduction-show}
 \end{figure}
 
-注意到归约前后问题的规模可能有很大的差别。在前面构造乘法运算例子中，1次乘法运算被归约成了3次平方运算、3次加减法运算和1次位运算，
-即便考虑中间结果的大小，归约后问题的规模仍然与原问题同阶。
+很多时候，我们寻找归约仅仅是为了改变问题的结构。难以直接求解的问题稍作改变，有时就变得容易，
+下面的序列查询就是这样的例子：
 
-归约是复杂性理论证明中的常用手段。例如，我们想要检查``判定图中是否存在超过大小为$k$的团(Clique)''这一问题的难度。显然$\mathrm{Clique}\in\mathrm{NP}$。
+\begin{prob}[序列查询]
+ 给出一列数字$A_1, A_2, \ldots A_n$和若干个查询，第$i$个查询$(x_i,y_i)$需要求出
+ 子序列$A_{x_i}, A_{x_{i+1}}, \ldots, A_{y_i}$中所有数字的和，但相同的数字只计算一次。
+ 例如序列$1, 10, 10, 1$的查询结果为$12$。
+\end{prob}
+
+试图直接解决这个问题是较为困难的。如果用朴素的算法，每次查询的时间复杂度将达到$O(n\log n)$。
+当我们试图用数据结构优化这个查询时也遇到了困难：一个大区间的查询结果难以直接写成小区间查询结果的递推关系。
+这个问题的归约实际是将问题作了适当的改写，将``不重复的数字''用数量刻画出来。引入辅助函数
+$$B_i = 
+\begin{cases}
+ -1 & \textrm{$i$是$B_i$首次出现的位置} \\
+ \displaystyle\argmax_{j < i} A_j = B_i & \textrm{否则.} \\
+\end{cases}
+$$
+$B_i$的含义是每个数字在数列中上一次出现的位置。对于查询$(x, y)$中的某个数$A_i$，我们都查看它上一次出现的位置，
+如果$B_i\geq x$，说明$A_i$这个数字已经在$A_x,A_{x+1}\ldots,A_{i-1}$中已经出现过，不再需要重复计算。因此，查询$(x,y)$被转化为求
+$$
+\sum_{t\in T} A_t, \textrm{其中\,}T = \{i ~|~ x \leq i \leq y\textrm{且\,} B_i < x_i \}.
+$$
+如果把序列中的每一个数字看作是二维平面上的一个点$(i, B_i)$，则一次查询$(x, y)$就被归约成求
+矩形$(x, 0)-(y, B_x - 1)$中所有点$A_i$数值的和，而这是一个相对容易解决的经典问题，可以在$O(\log^2n)$的时间内获得查询结果。
+
+
+这种类型的归约还是复杂性理论证明中的一个基本手段。例如，我们想要检查Clique这一问题的难度。显然$\mathrm{Clique}\in\mathrm{NP}$。
 我们已知SAT问题是NP-完全的，如果我们能在多项式时间内，将一个SAT问题的输入$C$转换成一个最大团问题的输入$G$，并且$G$存在大小为$k$的团当且仅当SAT问题可被满足，
 我们就能得出``Clique问题至少和SAT问题一样难''的结论。如果存在这样的归约，Clique就是NP-完全的。
 
-在实际解决问题时，归约在大多数时候意味着用一个更通用的算法，来解决一个相对简单的问题。
-一个典型的例子是我们把二分图的匹配问题归约到网络最大流问题。直观上看，这个归约并没有使用到网络流问题的全部能力，
-Dinic算法在求解这类具有特殊结构的网络流问题时有$O(\sqrt{V} E)$的时间复杂度。
+\begin{prob}[最大权闭包, Closure]
+ 
+\end{prob}
 
+图 \ref{fig:reduction-show} 中的方框可以重复许多次，
+
+%将最大权闭包归约到最小割。
+
+%子树查询变为区间查询。
+
+%GSS2中查询的归约。
+
+%区间询问。
 
 \section{归约到CNF-SAT问题}
 
@@ -248,10 +446,10 @@ $$\neg (x_p \land x_q) = (\neg x_p \lor \neg x_q).$$
  \begin{tikzpicture}
   \matrix (m) [matrix of nodes,row sep=2em,column sep=2em,minimum width=1em]
   {
-     & Tetris & \\
-     Sudoku & Exact Cover & SAT \\
-     XOR & 2-SAT & 3-SAT\\
-         & 强连通分量 & \\
+     & Tetris \\
+     Sudoku & Exact Cover & SAT & Clique \\
+     XOR & 2-SAT & 3-SAT & 二分图匹配 \\
+         & 强连通分量 & & 最大流 & Closure \\
   };
   \path[-stealth]
     (m-1-2) edge (m-2-2)
@@ -262,12 +460,22 @@ $$\neg (x_p \land x_q) = (\neg x_p \lor \neg x_q).$$
     (m-3-2) edge (m-3-3)
     (m-3-3) edge [stealth-stealth] (m-2-3)
     (m-3-2) edge (m-4-2)
+    (m-2-3) edge [stealth-stealth] (m-2-4)
+    (m-3-4) edge (m-2-4)
+    (m-3-4) edge (m-4-4)
+    (m-4-2) edge (m-4-4)
+    (m-4-5) edge (m-4-4)
 ;
  \end{tikzpicture}
- \caption{SAT相关问题的归约关系\protect\footnotemark}
+ \caption{一些问题之间的归约关系}
  \label{fig:sat-reduction}
 \end{figure}
-\footnotetext{广义的方块覆盖和数独问题都是NP-完全问题，它们能与SAT, Exact Cover互相归约。}
 
-图 \ref{fig:sat-reduction} 中列举了与SAT有关的一系列问题之间的归约关系，我们看到，问题的归约并不是唯一的。SAT和Exact Cover都是NP-完全问题，它们之间可以相互归约；
-2-SAT既可以被归约成一般的SAT问题从而调用SAT solver求解，也可以被归约成图中的强连通分量问题，用基于深度优先搜索的算法求解。
+图 \ref{fig:sat-reduction} 列举了本章中一些问题之间的归约关系。我们看到，问题之间往往存在复杂的归约关系。
+SAT和Exact Cover都是NP-完全问题，它们之间可以相互归约；
+2-SAT既可以被归约成一般的SAT问题从而调用SAT solver求解，也可以被归约成图中的强连通分量问题。
+图中并没有标出这些问题之间全部的归约关系(例如广义的Tetris和Sudoku都是NP-完全问题)，标出的一些归约关系我们也没有提及(例如强连通分量可以归约为网络流问题)。
+
+最后，线性方程组、网络流、线性规划等问题都属于P-完全问题。这意味着所有能够在多项式时间内解决的问题，都可以NC归约到它们。
+虽然这一性质并不说明这些问题很困难，也不说明它们能够作为``通用''的问题求解工具，但我们仍然可以看出，这些问题都蕴藏了丰富的结构，
+大量的P问题都可以通过朴素的转换归约到这些问题当中。

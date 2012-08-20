@@ -19,11 +19,11 @@
 %\setromanfont{Liberation Serif}
 
 \pagestyle{fancy}
-\rhead{{\sf\thepage}}
-\lhead{\kai ACM/ICPC Code Library}
+%\rhead{{\sf\thepage}}
+%\lhead{\kai ACM/ICPC Code Library}
 
-\fancyhead[L]{\sf\kai \leftmark} 
-\fancyhead[R]{\sf\kai \rightmark}
+%\fancyhead[L]{\sf\kai \leftmark} 
+%\fancyhead[R]{\sf\kai \rightmark}
 
 \newcommand{\kai}{\CJKfamily{kai}}
 \newcommand{\hei}{\CJKfamily{hei}}
@@ -51,6 +51,9 @@
 \usepackage{sectsty}
 \allsectionsfont{\hei}
 
+% chapter format
+\titleformat{\chapter}{\huge\bfseries\hei}{第\,\thechapter\,章}{1em}{}
+
 % main font of code, Liberation Mono looks pretty good
 \newfontfamily{\monotype}{Liberation Mono}
 
@@ -71,5 +74,14 @@
 
 \newtheorem{prob}{问题}
 
-\graphicspath{{graf/}}
+\tikzstyle{vertex} = [circle,draw,fill=black!15,minimum size=20pt,inner sep=0pt]
 
+
+
+\usepackage{enumitem}
+\setenumerate[1]{itemsep=3pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setitemize[1]{itemsep=3pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setdescription{itemsep=3pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
