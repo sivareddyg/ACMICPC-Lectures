@@ -10,7 +10,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{tikz}
-\usetikzlibrary{matrix}
+\usetikzlibrary{matrix,fit}
 % \XeTeXinputencoding "cp936"
 
 \setCJKfamilyfont{kai}{KaiTi_GB2312}
@@ -53,6 +53,20 @@
 
 % main font of code, Liberation Mono looks pretty good
 \newfontfamily{\monotype}{Liberation Mono}
+
+
+\renewcommand{\contentsname}{目录}
+\renewcommand{\listfigurename}{图目录}
+\renewcommand{\listtablename}{表目录}
+\renewcommand{\partname}{第 \thepart 部分}
+%\renewcommand{\chaptername}{第 \thechapter 章} %%??
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\bibname}{参考文献}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\indexname}{索引}
+%\renewcommand{\abstractname}{摘要}
+%\renewcommand{\refname}{参考文献}
 
 
 \newtheorem{prob}{问题}
