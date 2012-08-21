@@ -1,6 +1,6 @@
 \documentclass[11pt]{book}
 \usepackage[a4paper]{geometry}
-
+\usepackage{import}
 \input{format.tex} % formatting template
 
 \begin{document}
@@ -10,14 +10,14 @@
 \date{}
 
 %\maketitle
-
-\input{reduction/reduction.tex}
-
+%\subimport{reduction/}{reduction.tex}
+\subimport{search/}{search.tex}
 % 归约
-% 启发式搜索
-% Fingerprint
+% 定界搜索
+% Fingerprinting
 % 凸性
 % 数据结构上的分治
 % 线性规划与对偶
+% 计算机系统相关：优化
 % 正则语言与有穷自动机
 \end{document}

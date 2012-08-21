@@ -1,0 +1,42 @@
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}
+ \clip (-2, -1) rectangle (7.5, 6);
+  \node[vertex](s) at (0, 4) {$s$};
+  \node[vertex, scale=0.5](a) at (2, 4) {};
+  \node[vertex, scale=0.5](b) at (4, 4) {};
+  \node[vertex, scale=0.5](c) at (0, 2) {};
+  \node[vertex, scale=0.5](d) at (2, 2) {};
+  \node[vertex, scale=0.5](e) at (4, 2) {};
+  \node[vertex, scale=0.5](f) at (0, 0) {};
+  \node[vertex, scale=0.5](g) at (2, 0) {};
+  \node[vertex](t) at (4, 0) {$t$};
+  \node[vertex, fill=white](s1) at (-1.5, 2) {$s^*$};
+  \node[vertex, fill=white](t1) at (5.5, 2) {$t^*$};
+  \node[vertex, fill=white, scale=0.5](f1) at (1, 3) {};
+  \node[vertex, fill=white, scale=0.5](f2) at (3, 3) {};
+  \node[vertex, fill=white, scale=0.5](f3) at (1, 1) {};
+  \node[vertex, fill=white, scale=0.5](f4) at (3, 1) {};
+ 
+  \path[-]
+  (s) edge (a) (a) edge (b)
+  (c) edge (d) (d) edge (e)
+  (f) edge (g) (g) edge (t)
+  (s) edge (c) (c) edge (f)
+  (a) edge (d) (d) edge (g)
+  (b) edge (e) (e) edge (t)
+;
+  \path[-, dashed]
+  (f1) edge (f2) (f1) edge (f3) (f2) edge (f4) (f3) edge (f4);
+
+ \draw (s) .. controls +(2, 3) and +(8, 4)  .. (t);
+ \draw [dashed] (s1) .. controls +(0, -3) and +(0, -3) .. (f4);
+ \draw [dashed] (f1) .. controls +(0, 3) and +(0, 3) .. (t1);
+ \draw [dashed] (s1) .. controls +(0, 1) and +(-1, 0) .. (f1);
+ \draw [dashed] (s1) .. controls +(0, -1) and +(-1, 0) .. (f3);
+ \draw [dashed] (t1) .. controls +(0, 1) and +(1, 0) .. (f2);
+ \draw [dashed] (t1) .. controls +(0, -1) and +(1, 0) .. (f4);
+ \end{tikzpicture}
+ \caption{平面图的$s$-$t$流等价于对偶中的$s^*$-$t^*$最短路径($s^*$到$t^*$的边被删除了)}
+ \label{fig:flow-to-shorestpath}
+\end{figure}

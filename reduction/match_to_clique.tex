@@ -1,0 +1,59 @@
+\begin{figure}[h]
+ \center
+ \begin{tikzpicture}
+ \begin{scope}
+  \node[vertex](l4) at (0, 0) {$d$};
+  \node[vertex](l3) at (0, 1) {$c$};
+  \node[vertex](l2) at (0, 2) {$b$};
+  \node[vertex](l1) at (0, 3) {$a$};
+  \node[vertex](r4) at (2, 0) {$d'$};
+  \node[vertex](r3) at (2, 1) {$c'$};
+  \node[vertex](r2) at (2, 2) {$b'$};
+  \node[vertex](r1) at (2, 3) {$a'$};
+  \path[-]
+    (l1) edge (r1)
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l2) edge (r3)
+    (l2) edge (r4)
+    (l3) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+  \path[-, line width=1pt]
+    (l1) edge (r2)
+    (l2) edge (r1)
+    (l3) edge (r3)
+    (l4) edge (r4)
+;
+ \end{scope}
+
+ \begin{scope}[xshift=6cm]
+  \node[vertex](e1) at (-1, 2) {$aa'$};
+  \node[vertex, line width=1pt](e2) at (-1, 1) {$ab'$};
+  \node[vertex, line width=1pt](e3) at (1, 0) {$ba'$};
+  \node[vertex](e4) at (0, 3) {$bc'$};
+  \node[vertex](e5) at (0, 0) {$bd'$};
+  \node[vertex](e6) at (2, 1) {$ca'$};
+  \node[vertex, line width=1pt](e7) at (2, 2) {$cc'$};
+  \node[vertex, line width=1pt](e8) at (1, 3) {$dd'$};
+  \path[-]
+   (e1) edge (e4) (e1) edge (e5) (e1) edge (e7) (e1) edge (e8)
+   (e2) edge (e3) (e2) edge (e4) (e2) edge (e5) (e2) edge (e6) (e2) edge (e7) (e2) edge (e8)
+   (e3) edge (e6) (e3) edge (e7) (e3) edge (e8)
+   (e4) edge (e8)
+   (e5) edge (e6) (e5) edge (e7)
+   (e6) edge (e8)
+   (e7) edge (e8)
+;
+  \path[-, line width=1pt]
+    (e2) edge (e3) (e2) edge (e7) (e2) edge (e8)
+    (e3) edge (e7) (e3) edge (e8)
+    (e7) edge (e8)
+;
+ \end{scope}
+
+ \end{tikzpicture}
+ \caption{二分图最大匹配到最大团的归约}
+ \label{fig:match-to-clique}
+\end{figure}
